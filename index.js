@@ -1,7 +1,6 @@
-const { Client, GatewayIntentBits, EmbedBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder } = require('discord.js');
-const admin = require('firebase-admin');
-
-// Check if environment variable exists
+// ============================================
+// FIREBASE ADMIN – Fix for escaped newlines
+// ============================================
 if (!process.env.FIREBASE_SERVICE_ACCOUNT) {
     console.error('❌ FIREBASE_SERVICE_ACCOUNT environment variable is missing!');
     process.exit(1);
@@ -9,11 +8,13 @@ if (!process.env.FIREBASE_SERVICE_ACCOUNT) {
 
 let serviceAccount;
 try {
-    serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+    let rawJson = process.env.FIREBASE_SERVICE_ACCOUNT;
+    // Replace literal \n with actual newlines (fixes private_key formatting)
+    rawJson = rawJson.replace(/\\n/g, '\n');
+    serviceAccount = JSON.parse(rawJson);
     console.log('✅ Firebase service account loaded');
 } catch (err) {
     console.error('❌ Failed to parse FIREBASE_SERVICE_ACCOUNT:', err.message);
-    console.error('Make sure the environment variable contains valid JSON (no extra quotes, no line breaks).');
     process.exit(1);
 }
 
@@ -23,7 +24,6 @@ admin.initializeApp({
 
 const db = admin.firestore();
 const auth = admin.auth();
-// ... rest of your bot code
 
 // ============================================
 // DISCORD BOT SETUP
