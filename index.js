@@ -1,8 +1,8 @@
 const { Client, GatewayIntentBits, EmbedBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder } = require('discord.js');
-const admin = require('firebase-admin');   // <-- THIS WAS MISSING
+const admin = require('firebase-admin');
 
 // ============================================
-// FIREBASE ADMIN – Fix for escaped newlines
+// FIREBASE ADMIN – FIXED for RS256 error
 // ============================================
 if (!process.env.FIREBASE_SERVICE_ACCOUNT) {
     console.error('❌ FIREBASE_SERVICE_ACCOUNT environment variable is missing!');
@@ -11,22 +11,31 @@ if (!process.env.FIREBASE_SERVICE_ACCOUNT) {
 
 let serviceAccount;
 try {
+    // Parse the JSON as-is first
     let rawJson = process.env.FIREBASE_SERVICE_ACCOUNT;
-    // Replace literal \n with actual newlines (fixes private_key formatting)
-    rawJson = rawJson.replace(/\\n/g, '\n');
     serviceAccount = JSON.parse(rawJson);
+    
+    // Fix: Replace literal \n with actual newlines in private_key
+    if (serviceAccount.private_key) {
+        serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
+    }
+    
     console.log('✅ Firebase service account loaded');
+    console.log('Private key starts with:', serviceAccount.private_key.substring(0, 30) + '...');
 } catch (err) {
     console.error('❌ Failed to parse FIREBASE_SERVICE_ACCOUNT:', err.message);
     process.exit(1);
 }
 
+// Initialize with the fixed credentials
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
 });
 
 const db = admin.firestore();
 const auth = admin.auth();
+
+console.log('✅ Firebase Admin SDK initialized successfully');
 
 // ... the rest of your bot code (commands, modals, etc.)
 
