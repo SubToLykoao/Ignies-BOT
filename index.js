@@ -21,7 +21,14 @@ try {
     }
     
     console.log('✅ Firebase service account loaded');
-    console.log('Private key starts with:', serviceAccount.private_key.substring(0, 30) + '...');
+    
+    // DIAGNOSTIC - Check the private key format
+    console.log('=== DIAGNOSTIC START ===');
+    console.log('Private key first 50 chars:', serviceAccount.private_key.substring(0, 50));
+    console.log('Private key includes \\n?', serviceAccount.private_key.includes('\\n'));
+    console.log('Private key includes actual newlines?', serviceAccount.private_key.includes('\n'));
+    console.log('=== DIAGNOSTIC END ===');
+    
 } catch (err) {
     console.error('❌ Failed to parse FIREBASE_SERVICE_ACCOUNT:', err.message);
     process.exit(1);
