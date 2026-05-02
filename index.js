@@ -1,3 +1,6 @@
+const { Client, GatewayIntentBits, EmbedBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder } = require('discord.js');
+const admin = require('firebase-admin');   // <-- THIS WAS MISSING
+
 // ============================================
 // FIREBASE ADMIN – Fix for escaped newlines
 // ============================================
@@ -24,6 +27,8 @@ admin.initializeApp({
 
 const db = admin.firestore();
 const auth = admin.auth();
+
+// ... the rest of your bot code (commands, modals, etc.)
 
 // ============================================
 // DISCORD BOT SETUP
