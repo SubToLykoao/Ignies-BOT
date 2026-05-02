@@ -1,11 +1,21 @@
 const { Client, GatewayIntentBits, EmbedBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder } = require('discord.js');
 const admin = require('firebase-admin');
 
-// ============================================
-// FIREBASE ADMIN SDK (Service Account)
-// ============================================
-// You'll get this JSON from Firebase Console → Project Settings → Service Accounts
-const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+// Check if environment variable exists
+if (!process.env.FIREBASE_SERVICE_ACCOUNT) {
+    console.error('❌ FIREBASE_SERVICE_ACCOUNT environment variable is missing!');
+    process.exit(1);
+}
+
+let serviceAccount;
+try {
+    serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+    console.log('✅ Firebase service account loaded');
+} catch (err) {
+    console.error('❌ Failed to parse FIREBASE_SERVICE_ACCOUNT:', err.message);
+    console.error('Make sure the environment variable contains valid JSON (no extra quotes, no line breaks).');
+    process.exit(1);
+}
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
@@ -13,6 +23,7 @@ admin.initializeApp({
 
 const db = admin.firestore();
 const auth = admin.auth();
+// ... rest of your bot code
 
 // ============================================
 // DISCORD BOT SETUP
